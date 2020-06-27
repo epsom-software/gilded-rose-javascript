@@ -53,7 +53,7 @@ describe("xx", function () {
     "Aged Brie",
     "Elixir of the Mongoose",
     "Backstage passes to a TAFKAL80ETC concert",
-    "Conjured Mana Cake",
+    // "Conjured Mana Cake",
   ];
   let numbers = [-1, 0, 1, 4, 5, 6, 9, 10, 11, 19, 20, 21, 49, 50 /*51, 80*/];
   // let i = -5;
@@ -154,6 +154,14 @@ describe("updateItem", function () {
       let item = new Item("Backstage passes to a TAFKAL80ETC concert", 0, 40);
       updateItem(item);
       expect(item.quality).toBe(0);
+    });
+  });
+
+  describe("Conjured Mana Cake", function () {
+    it("should lower quality", function () {
+      let item = new Item("Conjured +5 Dexterity Vest", 10, 20);
+      updateItem(item);
+      expect(item.quality).toBe(18);
     });
   });
 });

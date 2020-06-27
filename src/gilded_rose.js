@@ -14,9 +14,7 @@ items.push(new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20));
 items.push(new Item("Conjured Mana Cake", 3, 6));
 
 function update_quality() {
-  for (var i = 0; i < items.length; i++) {
-    updateItem(items[i]);
-  }
+  items.forEach(updateItem);
 }
 
 function updateItem(item) {
@@ -24,13 +22,16 @@ function updateItem(item) {
     return;
   }
 
+  const isConjured = item.name.includes("Conjured ");
+  const normalisedName = item.name.replace("Conjured ", "");
+
   item.sell_in = item.sell_in - 1;
   const isExpired = item.sell_in < 0;
 
   const changeQuality = (() => {
-    if (item.name === "Aged Brie") {
+    if (normalisedName === "Aged Brie") {
       return isExpired ? 2 : 1;
-    } else if (item.name === "Backstage passes to a TAFKAL80ETC concert") {
+    } else if (normalisedName === "Backstage passes to a TAFKAL80ETC concert") {
       return isExpired
         ? -item.quality
         : item.sell_in < 5
@@ -38,11 +39,11 @@ function updateItem(item) {
         : item.sell_in < 10
         ? 2
         : 1;
-    } else if (item.name === "Sulfuras, Hand of Ragnaros") {
-      return 0;
     }
     return isExpired ? -2 : -1;
   })();
 
-  item.quality = Math.min(Math.max(item.quality + changeQuality, 0), 50);
+  const multiplier = isConjured && changeQuality < 0 ? 2 : 1;
+  const nextQuality = item.quality + changeQuality * multiplier;
+  item.quality = Math.min(Math.max(nextQuality, 0), 50);
 }
