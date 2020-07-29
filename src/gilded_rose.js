@@ -17,33 +17,45 @@ function update_quality() {
   items.forEach(updateItem);
 }
 
-function updateItem(item) {
-  if (item.name === "Sulfuras, Hand of Ragnaros") {
-    return;
-  }
-
-  const isConjured = item.name.includes("Conjured ");
-  const normalisedName = item.name.replace("Conjured ", "");
-
-  item.sell_in = item.sell_in - 1;
-  const isExpired = item.sell_in < 0;
-
-  const changeQuality = (() => {
-    if (normalisedName === "Aged Brie") {
-      return isExpired ? 2 : 1;
-    } else if (normalisedName === "Backstage passes to a TAFKAL80ETC concert") {
-      return isExpired
+const products = [
+  {
+    name: "Sulfuras, Hand of Ragnaros",
+    isLegendary: true,
+  },
+  {
+    name: "Aged Brie",
+    changeQuality: (isExpired) => (isExpired ? 2 : 1),
+  },
+  {
+    name: "Backstage passes to a TAFKAL80ETC concert",
+    changeQuality: (isExpired, item) =>
+      isExpired
         ? -item.quality
         : item.sell_in < 5
         ? 3
         : item.sell_in < 10
         ? 2
-        : 1;
-    }
-    return isExpired ? -2 : -1;
-  })();
+        : 1,
+  },
+  {
+    name: "Conjured Mana Cake",
+    changeQuality: (isExpired) => (isExpired ? -4 : -2),
+  },
+];
 
-  const multiplier = isConjured && changeQuality < 0 ? 2 : 1;
-  const nextQuality = item.quality + changeQuality * multiplier;
+const defaultProduct = {
+  name: "default",
+  changeQuality: (isExpired) => (isExpired ? -2 : -1),
+};
+
+function updateItem(item) {
+  const product =
+    products.find(({ name }) => name === item.name) || defaultProduct;
+
+  if (product.isLegendary) return;
+
+  item.sell_in -= 1;
+  const isExpired = item.sell_in < 0;
+  const nextQuality = item.quality + product.changeQuality(isExpired, item);
   item.quality = Math.min(Math.max(nextQuality, 0), 50);
 }

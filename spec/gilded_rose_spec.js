@@ -159,7 +159,7 @@ describe("updateItem", function () {
 
   describe("Conjured Mana Cake", function () {
     it("should lower quality", function () {
-      let item = new Item("Conjured +5 Dexterity Vest", 10, 20);
+      let item = new Item("Conjured Mana Cake", 10, 20);
       updateItem(item);
       expect(item.quality).toBe(18);
     });
